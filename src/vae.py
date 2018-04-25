@@ -136,10 +136,10 @@ class VAE:
     def save_weights(self, filepath):
         self.model.save_weights(filepath)
 
-    def train(self, game, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
+    def gen_train(self, game, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
         data_gen = training_data_generator(game, self.batch_size, data_dir=data_dir)
         steps_per_epoch = len(os.listdir(data_dir))/float(self.batch_size)
-        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, use_multiprocessing=True, workers=2)
+        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True)
 
 
 
