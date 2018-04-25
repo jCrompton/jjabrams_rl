@@ -1,2 +1,5 @@
 *.pyc
-__pycache__
+*.pyo
+code/__pycache__
+ROMS
+bin
