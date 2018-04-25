@@ -3,3 +3,5 @@
 code/__pycache__
 ROMS
 bin
+*.sh
+
