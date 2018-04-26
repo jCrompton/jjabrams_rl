@@ -1,6 +1,8 @@
 import retro
 import os
+import argparse
 import multiprocessing
+
 import numpy as np
 import scipy.misc
 import uuid
@@ -37,3 +39,14 @@ def get_img_from_array(state, size=(320,320)):
     img = Image.fromarray(state)
     scaled_img = img.resize(size, Image.ANTIALIAS)
     return scaled_img
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('game', type=str, help='Name of game to play')
+    parser.add_argument('--samples_per_stage', type=int, default=10000, help='Limit of images per stage')
+    parser.add_argument('--threads', type=int, default=4, help='Number of cores to run collection on')
+    parser.add_argument('--size', type=tuple, default=(320,320), help='Size of image data, default VAE runs on 320x320 (confirm if doubtful)')
+    parser.add_argument('--training_data_dir', type=str, default='/home/jamescrompton/jjabrams_rl/data/training_data/', help='Location of training data directory')
+    args = parser.parse_args()
+
+    return gen_vae_data(args.game, samples_per_stage=args.samples_per_stage, threads=args.threads, size=args.size, data_dir=args.training_data_dir)
