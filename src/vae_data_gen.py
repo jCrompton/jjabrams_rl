@@ -49,4 +49,4 @@ if __name__ == '__main__':
     parser.add_argument('--training_data_dir', type=str, default='/home/jamescrompton/jjabrams_rl/data/training_data/', help='Location of training data directory')
     args = parser.parse_args()
 
-    return gen_vae_data(args.game, samples_per_stage=args.samples_per_stage, threads=args.threads, size=args.size, data_dir=args.training_data_dir)
+    print(gen_vae_data(args.game, samples_per_stage=args.samples_per_stage, threads=args.threads, size=args.size, data_dir=args.training_data_dir))
