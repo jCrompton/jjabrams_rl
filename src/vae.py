@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from vae_data_gen import training_data_generator
 
-from keras.layers import Input, Conv2D, Flatten, Dense, Conv2DTranspose, Lambda, Reshape, SeparableConv2D, BatchNormalization, Activation
+from keras.layers import Input, Conv2D, Flatten, Dense, Conv2DTranspose, Lambda, Reshape, SeparableConv2D, BatchNormalization, Activation, AveragePooling2D
 from keras.models import Model
 from keras import backend as K
 from keras import metrics
