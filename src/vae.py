@@ -72,12 +72,13 @@ class VAE:
             forward_input = Activation('relu', name='Activation{}'.format(i))(forward_input)
         return forward_input
 
-    def _build_resnet_encoder(self, input_tensor):
+    def _build_resnet_encoder(self, input_tensor, pooling=(7,7)):
         resnet_block = input_tensor
         i = 0
         for convolutions, identities, kernel_size, filters in self.res_net_arch:
             resnet_block = self.block_builder.residual_block(resnet_block, kernel_size, filters, convolutions, identities, i)
             i+=1
+        resnet_block = AveragePooling2D(pooling, name='avg_pool')(resnet_block)
         return resnet_block
 
     def _build(self, basic_encoder=False):
