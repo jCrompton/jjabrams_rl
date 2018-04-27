@@ -15,13 +15,13 @@ def get_n_training_data(n, data_dir='/Users/jamescrompton/PycharmProjects/jjabra
     np.random.shuffle(saved_images)
     return np.array([scipy.misc.fromimage(Image.open('{}{}'.format(data_dir, path))) for path in saved_images[:n]])
 
-def training_data_generator(data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
+def training_data_generator(batch_size, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
     while True:
         saved_images = os.listdir(data_dir)
         np.random.shuffle(saved_images)
-        for image in saved_images:
-            data = scipy.misc.fromimage(Image.open('{}{}'.format(data_dir, image)))
-            yield data, data
+        for i in range(0, len(saved_images), batch_size):
+            data = np.array([scipy.misc.fromimage(Image.open('{}{}'.format(data_dir, path))) for path in saved_images[i:i+batch_size]])
+            yield (data, data)
 
 def gen_vae_data(game, samples_per_stage=10000, threads=2, size=(320,320), **kwargs):
     training_data_dir = '{}/PycharmProjects/jjabrams_rl/data/training_data/'.format(expanduser("~")) if not kwargs.get('data_dir') else kwargs.get('data_dir')
