@@ -46,6 +46,7 @@ class VAE:
         self.epochs = kwargs.get('epochs') if kwargs.get('epochs') else 1
         self.batch_size = kwargs.get('batch_size') if kwargs.get('batch_size') else 32
         self.block_builder = Blocks()
+        self.training_callbacks = [EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
         self.model, self.encoder, self.decoder = self._build()
 
     def _sampling(self, args):
@@ -146,7 +147,7 @@ class VAE:
     def gen_train(self, game, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
         data_gen = training_data_generator(game, self.batch_size, data_dir=data_dir)
         steps_per_epoch = len(os.listdir(data_dir))/float(self.batch_size)
-        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True)
+        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, callbacks=self.training_callbacks)
 
 
 
