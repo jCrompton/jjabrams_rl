@@ -1,14 +1,17 @@
 import retro
 import os
+import argparse
 import h5py
+import uuid
 import random
 
+from PIL import Image
 import numpy as np
-import pandas as pd
-from vae_data_gen import training_data_generator, get_n_training_data
+from vae_data_gen import training_data_generator, get_n_training_data, get_img_array_from_path
 
 from keras.layers import Input, Conv2D, Flatten, Dense, Conv2DTranspose, Lambda, Reshape, SeparableConv2D, BatchNormalization, Activation, AveragePooling2D
 from keras.models import Model
+from keras.models import model_from_json
 from keras import backend as K
 from keras import metrics
 from keras.callbacks import EarlyStopping, TerminateOnNaN
@@ -46,6 +49,7 @@ class VAE:
         self.epochs = kwargs.get('epochs') if kwargs.get('epochs') else 1
         self.batch_size = kwargs.get('batch_size') if kwargs.get('batch_size') else 32
         self.block_builder = Blocks()
+        self.model_weight_path = '/home/jamescrompton/'
         self.training_callbacks = [EarlyStopping(monitor='vae_kl_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
         self.model, self.encoder, self.decoder = self._build()
 
@@ -138,11 +142,32 @@ class VAE:
 
         return(vae, vae_encoder, vae_decoder)
 
-    def set_weights(self, filepath):
-        self.model.load_weights(filepath)
+    def load_model(self, model_name):
+        with open('../models/model_jsons/{}.json'.format(model_name), 'r') as json_file:
+            loaded_model_json = json_file.read()
+            self.model = model_from_json(loaded_model_json)
+            self.model.load_weights('../models/weights/{}.h5'.format(model_name))
+            print('Loaded model {} to object.model'.format(model_name))
 
-    def save_weights(self, filepath):
-        self.model.save_weights(filepath)
+    def save_model(self):
+        if 'models' not in os.listdir('../'):
+            print('Creating models directory...')
+            os.mkdir('../models')
+        if 'weights' not in os.listdir('../models/'):
+            print('Creating weights directory...')
+            os.mkdir('../models/weights')
+        if 'model_jsons' not in os.listdir('../models/'):
+            print('Creating model_jsons directory')
+            os.mkdir('../models/model_jsons')
+        # Generate unique name for models
+        model_name = uuid.uuid4()
+        print('Saving model with name {}...'.format(model_name))
+        # Save model as JSON (save architecture)
+        model_json = self.model.to_json()
+        with open('../models/model_jsons/{}.json'.format(model_name), 'w') as json_file:
+            json_file.write(model_json)
+        self.model.save_weights('../models/weights/{}.h5'.format(model_name))
+        print('Saved {}'.format(model_name))
 
     def train_on_n(self, N, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=2, shuffle=True):
         data = get_n_training_data(N, data_dir=data_dir)
@@ -151,8 +176,55 @@ class VAE:
     def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', use_multiprocessing=False, workers=1, **kwargs):
         data_gen = training_data_generator(self.batch_size, data_dir=data_dir)
         steps_per_epoch = kwargs.get('steps_per_epoch') if kwargs.get('steps_per_epoch') else len(os.listdir(data_dir))/float(self.batch_size)
-        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True,
+        try:
+            self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True,
                                  callbacks=self.training_callbacks, use_multiprocessing=use_multiprocessing, workers=workers)
+            self.save_model()
+        except KeyboardInterrupt:
+            print('Cancelling training and saving current model weights to file...')
+            self.save_model()
+
+    def predict(self, image_path):
+        img = np.array(Image.open(path))
+        pred_img = Image.from_array(self.model.predict(img))
+        pred_img_name = uuid.uuid4()
+        save_path = '{}/{}'.format('/'.join(path.split('/')[:-1], pred_img_name))
+        print('Saving predicted image to given path: {}'.format(save_path))
+        img.save(save_path)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(help='Either train or predict the variational auto encoder (VAE).')
+    parser.add_argument('game', type=str, help='Name of game to play')
+    parser.add_argument('--training_data_dir', type=str, default='/home/jamescrompton/jjabrams_rl/data/training_data/', help='Location of training data directory (default /home/jamescrompton/jjabrams_rl/data/training_data/)')
+    parser.add_argument('--use_multiprocessing', type=bool, default=False, help='Use multiprocessing or not, (default False)')
+    parser.add_argument('--workers', type=int, default=1, help='Number of workers set only if multiprocessing True (default 1)')
+    parser.add_argument('--epochs', type=int, default=1, help='Number of epochs to train on (default 1)')
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training (defaults to 32)')
+    parser.add_argument('--train', type=bool, default=True, help='If raised the VAE will be trained using the above parameters (default True)')
+
+    parser.add_argument('--prediction_image_path', type=str, default='', help='Path to image to run prediction on (default empty string)')
+    parser.add_argument('--model_weights', type=str, default='', help='Path to pre-trained weights for model to load (default empty string)')
+    parser.add_argument('--predict', type=bool, default=False, help='If raised the VAE will run a prediction on the specified image (default False), to be saved in the same directory as the given image.')
+
+    args = parser.parse_args()
+    if args.train:
+        multiprocessing_str = ' multithreading with {} workers'.format(parser.workers) if args.use_multiprocessing else ''
+        print('Training VAE on {} (epochs:{}, batch_size:{}) using pre-captured data from {}{}, CTRL-C to stop manually at any time...'.format(args.game, args.epochs, args.batch_size, args.training_data_dir, multiprocessing_str))
+
+        vae = VAE(epochs=args.epochs, batch_size=args.batch_size)
+        vae.gen_train(data_dir=data_dir, use_multiprocessing=use_multiprocessing, workers=workers, **kwargs)
+    elif args.predict:
+        assert args.prediction_image_path != '', 'Argument --prediction_image_path cannot be an empty string, please specify the path to the image to run the VAE on.'
+        assert args.model_weights != '', 'Argument --model_weights cannot be an empty string, please specify the path to the pre-trained model weights.'
+        assert os.path.exists(args.prediction_image_path), 'Path to the prediction image does not exist, check you are entering the correct location'
+        assert os.path.exists(args.model_weights), 'Path to the model weights does not exist, check you are entering the correct location'
+        print('Predicting {} with {} weights'.format(args.prediction_image_path, args.model_weights))
+
+        vae = VAE()
+        vae.load_model(args.model_weights)
+        vae.predict(args.prediction_image_path)
+    else:
+        print('You must specify either --train or --predict.')
 
 
 
