@@ -31,7 +31,9 @@ class VAE:
     conv_activations = ['relu', 'relu', 'relu', 'relu', 'relu', 'relu']
     
     # RESNET
-    res_net_arch = [(1,2,3,[64,64,256]), (1,3,3,[128,128,512]), (1,5,3,[256,256,1028]), (1,2,3,[512,512,2048])]
+    res_net_arch0 = [(1,2,3,[64,64,256]), (1,3,3,[128,128,512]), (1,5,3,[256,256,1028]), (1,2,3,[512,512,2048])]
+    res_net_arch = [(1,2,2, [32,32,64])]
+
     # Decoder
     conv_t_filters = [64, 64, 32, 32, 3]
     conv_t_kernel_sizes = [12, 12, 10, 8, 6]
@@ -81,7 +83,7 @@ class VAE:
         resnet_block = AveragePooling2D(pooling, name='avg_pool')(resnet_block)
         return resnet_block
 
-    def _build(self, basic_encoder=False):
+    def _build(self, basic_encoder=True):
         # Encoder
         vae_input = Input(shape=self.input_dim, name='vae_input')
         forward_input = self._build_basic_encoder(vae_input) if basic_encoder else self._build_resnet_encoder(vae_input)
@@ -113,7 +115,11 @@ class VAE:
             vae_dn = Conv2DTranspose(filters=filter_size, kernel_size=kernel_size, strides=strides, activation=activation, name='CONV2D_T{}'.format(i))
             backward_input = vae_dn(backward_input)
             decoder_input = vae_dn(decoder_input)
-        # print(self._get_transpose_filter_cap(backward_input))
+
+        # Reshape cap to fit OG image size
+        backward_input = Reshape(self.input_dim, name='BackwardInputReshape')(backward_input)
+        decoder_input = Reshape(self.input_dim, name='DecoderInputReshape')(decoder_input)
+        # Make models
         vae = Model(vae_input, backward_input)
         vae_decoder = Model(vae_z_input, decoder_input)
         vae_encoder = Model(vae_input, vae_z)

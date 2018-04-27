@@ -14,9 +14,11 @@ from keras.utils.data_utils import get_file
 from keras import backend as K
 
 class Blocks:
-    def __init__(self, separable=True, activation='relu'):
+    def __init__(self, separable=True, activation='relu', transpose=False):
         print('Initialized the building blocks module')
         self.conv = SeparableConv2D if separable else Conv2D
+        if transpose:
+            self.conv = Conv2DTranspose
         self.activation = activation
 
     def residual_block(self, input_tensor, kernel_size, filters, number_of_conv_blocks, number_of_id_blocks, stage, strides=(2, 2)):
