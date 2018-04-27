@@ -148,10 +148,11 @@ class VAE:
         data = get_n_training_data(N, data_dir=data_dir)
         self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle, verbose=verbosity)
 
-    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', **kwargs):
+    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', use_multiprocessing=False, workers=1, **kwargs):
         data_gen = training_data_generator(self.batch_size, data_dir=data_dir)
         steps_per_epoch = kwargs.get('steps_per_epoch') if kwargs.get('steps_per_epoch') else len(os.listdir(data_dir))/float(self.batch_size)
-        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, callbacks=self.training_callbacks)
+        self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True,
+                                 callbacks=self.training_callbacks, use_multiprocessing=use_multiprocessing, workers=workers)
 
 
 
