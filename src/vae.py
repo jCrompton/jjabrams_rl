@@ -148,7 +148,7 @@ class VAE:
         data = get_n_training_data(N, data_dir=data_dir)
         self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle, verbose=verbosity)
 
-    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
+    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', **kwargs):
         data_gen = training_data_generator(data_dir=data_dir)
         samples_per_epoch = kwargs.get('samples_per_epoch') if kwargs.get('samples_per_epoch') else len(os.listdir(data_dir))/float(self.batch_size)
         self.model.fit_generator(data_gen, samples_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, callbacks=self.training_callbacks)
