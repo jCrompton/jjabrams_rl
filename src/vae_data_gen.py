@@ -10,6 +10,11 @@ from os.path import expanduser
 import random
 from PIL import Image
 
+def get_n_training_data(n, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
+    saved_images = os.listdir(data_dir)
+    np.random.shuffle(saved_images)
+    return np.array([scipy.misc.fromimage(Image.open('{}'.format(path)) for path in saved_images[:n]])
+
 def training_data_generator(batch_size, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
     saved_images = os.listdir(data_dir)
     np.random.shuffle(saved_images)

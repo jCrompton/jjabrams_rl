@@ -5,7 +5,7 @@ import random
 
 import numpy as np
 import pandas as pd
-from vae_data_gen import training_data_generator
+from vae_data_gen import training_data_generator, get_n_training_data
 
 from keras.layers import Input, Conv2D, Flatten, Dense, Conv2DTranspose, Lambda, Reshape, SeparableConv2D, BatchNormalization, Activation, AveragePooling2D
 from keras.models import Model
@@ -144,7 +144,11 @@ class VAE:
     def save_weights(self, filepath):
         self.model.save_weights(filepath)
 
-    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
+    def train_on_n(self, N, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=2, shuffle=True):
+        data = get_n_training_data(n, data_dir=data_dir)
+        self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle)
+
+    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=verbosity):
         data_gen = training_data_generator(self.batch_size, data_dir=data_dir)
         steps_per_epoch = len(os.listdir(data_dir))/float(self.batch_size)
         self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, callbacks=self.training_callbacks)
