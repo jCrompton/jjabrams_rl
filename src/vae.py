@@ -145,7 +145,7 @@ class VAE:
         self.model.save_weights(filepath)
 
     def train_on_n(self, N, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=2, shuffle=True):
-        data = get_n_training_data(n, data_dir=data_dir)
+        data = get_n_training_data(N, data_dir=data_dir)
         self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle, verbosity=verbosity)
 
     def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
