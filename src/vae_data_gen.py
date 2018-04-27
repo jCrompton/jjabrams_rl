@@ -45,6 +45,7 @@ def gen_stage_data(args):
             img = get_img_from_array(s, size=size)
             img.save(img_name)
         states += 1
+    env.close()
     return (states-intro_skip-1)
 
 def get_img_from_array(state, size=(320,320)):
