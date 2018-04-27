@@ -146,9 +146,9 @@ class VAE:
 
     def train_on_n(self, N, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=2, shuffle=True):
         data = get_n_training_data(n, data_dir=data_dir)
-        self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle)
+        self.model.fit(data, data, epochs=self.epochs, callbacks=self.training_callbacks, batch_size=self.batch_size, shuffle=shuffle, verbosity=verbosity)
 
-    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/', verbosity=verbosity):
+    def gen_train(self, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
         data_gen = training_data_generator(self.batch_size, data_dir=data_dir)
         steps_per_epoch = len(os.listdir(data_dir))/float(self.batch_size)
         self.model.fit_generator(data_gen, steps_per_epoch=steps_per_epoch, epochs=self.epochs, shuffle=True, callbacks=self.training_callbacks)
