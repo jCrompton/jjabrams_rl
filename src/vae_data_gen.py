@@ -13,8 +13,8 @@ from PIL import Image
 def training_data_generator(game, batch_size, data_dir='/Users/jamescrompton/PycharmProjects/jjabrams_rl/data/training_data/'):
     saved_images = os.listdir(data_dir)
     np.random.shuffle(saved_images)
-    for i in range(0, len(saved_images), batch_size):
-        data = np.array([scipy.misc.fromimage(Image.open('{}{}'.format(data_dir, path))) for path in saved_images[i:i+batch_size]])
+    while True:
+        data = np.array([scipy.misc.fromimage(Image.open('{}{}'.format(data_dir, np.random.choice(saved_images)))) for _ in range(batch_size)])
         yield data, data
 
 def gen_vae_data(game, samples_per_stage=10000, threads=2, size=(320,320), **kwargs):
