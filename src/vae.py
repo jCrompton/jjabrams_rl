@@ -46,7 +46,7 @@ class VAE:
         self.epochs = kwargs.get('epochs') if kwargs.get('epochs') else 1
         self.batch_size = kwargs.get('batch_size') if kwargs.get('batch_size') else 32
         self.block_builder = Blocks()
-        self.training_callbacks = [EarlyStopping(monitor='loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
+        self.training_callbacks = [EarlyStopping(monitor='vae_kl_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
         self.model, self.encoder, self.decoder = self._build()
 
     def _sampling(self, args):
