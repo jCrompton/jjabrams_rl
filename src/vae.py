@@ -200,11 +200,11 @@ if __name__ == '__main__':
     parser.add_argument('--workers', type=int, default=1, help='Number of workers set only if multiprocessing True (default 1)')
     parser.add_argument('--epochs', type=int, default=1, help='Number of epochs to train on (default 1)')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training (defaults to 32)')
-    parser.add_argument('--train', type=bool, action="store_true", help='If raised the VAE will be trained using the above parameters (default True)')
+    parser.add_argument('--train', action="store_true", help='If raised the VAE will be trained using the above parameters (default True)')
 
     parser.add_argument('--prediction_image_path', type=str, default='', help='Path to image to run prediction on (default empty string)')
     parser.add_argument('--model_weights', type=str, default='', help='Path to pre-trained weights for model to load (default empty string)')
-    parser.add_argument('--predict', type=bool, action="store_true", help='If raised the VAE will run a prediction on the specified image (default False), to be saved in the same directory as the given image.')
+    parser.add_argument('--predict', action="store_true", help='If raised the VAE will run a prediction on the specified image (default False), to be saved in the same directory as the given image.')
 
     args = parser.parse_args()
     if args.train:
