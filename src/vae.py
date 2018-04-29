@@ -212,7 +212,7 @@ if __name__ == '__main__':
         print('Training VAE on {} (epochs:{}, batch_size:{}) using pre-captured data from {}{}, CTRL-C to stop manually at any time...'.format(args.game, args.epochs, args.batch_size, args.training_data_dir, multiprocessing_str))
 
         vae = VAE(epochs=args.epochs, batch_size=args.batch_size)
-        vae.gen_train(data_dir=data_dir, use_multiprocessing=use_multiprocessing, workers=workers, **kwargs)
+        vae.gen_train(data_dir=args.training_data_dir, use_multiprocessing=args.use_multiprocessing, workers=args.workers)
     elif args.predict:
         assert args.prediction_image_path != '', 'Argument --prediction_image_path cannot be an empty string, please specify the path to the image to run the VAE on.'
         assert args.model_weights != '', 'Argument --model_weights cannot be an empty string, please specify the path to the pre-trained model weights.'
