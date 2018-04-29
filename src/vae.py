@@ -7,7 +7,7 @@ import random
 
 from PIL import Image
 import numpy as np
-from vae_data_gen import training_data_generator, get_n_training_data, get_img_array_from_path
+from vae_data_gen import training_data_generator, get_n_training_data
 
 from keras.layers import Input, Conv2D, Flatten, Dense, Conv2DTranspose, Lambda, Reshape, SeparableConv2D, BatchNormalization, Activation, AveragePooling2D
 from keras.models import Model
@@ -20,7 +20,7 @@ from block_builder import Blocks
 
 def sampling(args):
     z_mean, z_log_var = args
-    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], Z_DIM), mean=0.,stddev=1.)
+    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], z_mean.shape[1]), mean=0.,stddev=1.)
     return z_mean + K.exp(z_log_var / 2) * epsilon
 
 class VAE:
@@ -53,11 +53,6 @@ class VAE:
         self.training_callbacks = [EarlyStopping(monitor='vae_kl_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
         self.model, self.encoder, self.decoder = self._build()
 
-    def _sampling(self, args):
-        z_mean, z_log_var = args
-        epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.z_dim), mean=0.,stddev=1.)
-        return z_mean + K.exp(z_log_var / 2) * epsilon
-
     def _build_transpose_filter_cap(self, input_tensor):
         input_dim = self._get_decoder_cap_dim()
         
@@ -88,6 +83,10 @@ class VAE:
         resnet_block = AveragePooling2D(pooling, name='avg_pool')(resnet_block)
         return resnet_block
 
+    @staticmethod
+    def vae_r_loss(y_true, y_pred):
+            return 1000 * K.mean(K.square(y_true - y_pred), axis = [1,2,3])
+
     def _build(self, basic_encoder=True):
         # Encoder
         vae_input = Input(shape=self.input_dim, name='vae_input')
@@ -99,7 +98,7 @@ class VAE:
         vae_z_mean = Dense(self.z_dim, name='vae_z_mean')(vae_z_in)
         vae_z_log_var = Dense(self.z_dim, name='vae_z_log_var')(vae_z_in)
 
-        vae_z = Lambda(self._sampling, name='vae_z')([vae_z_mean, vae_z_log_var])
+        vae_z = Lambda(sampling, name='vae_z')([vae_z_mean, vae_z_log_var])
         vae_z_input = Input(shape=(self.z_dim,), name='vae_z_input')
 
         vae_dense = Dense(self.dense_size, name='vae_dense')
@@ -139,6 +138,7 @@ class VAE:
             return vae_r_loss(y_true, y_pred) + vae_kl_loss(y_true, y_pred)
 
         vae.compile(optimizer='adam', loss=vae_loss, metrics=[vae_r_loss, vae_kl_loss])
+        # vae.compile(optimizer='adam', loss='binary_crossentropy')
 
         return(vae, vae_encoder, vae_decoder)
 
