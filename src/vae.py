@@ -193,7 +193,7 @@ class VAE:
         img.save(save_path)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(help='Either train or predict the variational auto encoder (VAE).')
+    parser = argparse.ArgumentParser()
     parser.add_argument('game', type=str, help='Name of game to play (eg SonicTheHedgehog2-Genesis)')
     parser.add_argument('--training_data_dir', type=str, default='/home/jamescrompton/jjabrams_rl/data/training_data/', help='Location of training data directory (default /home/jamescrompton/jjabrams_rl/data/training_data/)')
     parser.add_argument('--use_multiprocessing', type=bool, default=False, help='Use multiprocessing or not, (default False)')
