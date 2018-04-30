@@ -188,6 +188,7 @@ class VAE:
         img = np.array(Image.open(image_path))
         pred_img = Image.fromarray(self.model.predict(img)).reshape((1,) + self.input_dim)
         pred_img_name = uuid.uuid4()
+        print(pred_img.shape)
         save_path = '{}/{}'.format('/'.join(path.split('/')[:-1], pred_img_name))
         print('Saving predicted image to given path: {}'.format(save_path))
         img.save(save_path)
