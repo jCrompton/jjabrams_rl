@@ -51,7 +51,7 @@ class VAE:
         self.block_builder = Blocks()
         self.model_weight_path = '/home/jamescrompton/'
         self.training_callbacks = [EarlyStopping(monitor='vae_kl_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
-        self.model, self.encoder, self.decoder = self._build()
+        self.model, self.encoder, self.decoder = self._build(basic_encoder=kwargs.get('basic_encoder'))
 
     def _build_transpose_filter_cap(self, input_tensor):
         input_dim = self._get_decoder_cap_dim()
