@@ -63,15 +63,16 @@ class VAE:
             dim = stride*(dim-1) + kernel_size
         return dim
 
-    def _build_basic_encoder(self, input_tensor):
+    def _build_basic_encoder(self, input_tensor, separable_conv=True, batch_norm=True, activation='relu'):
+        conv_layer = SeparableConv2D if separable_conv else Conv2D
         forward_loop = zip(self.conv_filters, self.conv_kernel_sizes, self.conv_strides, self.conv_activations)
         forward_input = input_tensor
         for i, arguments in enumerate(forward_loop):
             filter_size, kernel_size, strides, activation = arguments
-            forward_input = SeparableConv2D(filters=filter_size, kernel_size=kernel_size,
+            forward_input = conv_layer(filters=filter_size, kernel_size=kernel_size,
                                 strides=strides, activation=activation, name='CONV2D{}'.format(i))(forward_input)
-            forward_input = BatchNormalization(axis=3, scale=False, name='BatchNorm{}'.format(i))(forward_input)
-            forward_input = Activation('relu', name='Activation{}'.format(i))(forward_input)
+            if batch_norm:
+                forward_input = BatchNormalization(axis=3, scale=False, name='BatchNorm{}'.format(i))(forward_input)
         return forward_input
 
     def _build_resnet_encoder(self, input_tensor, pooling=(7,7)):
@@ -129,7 +130,7 @@ class VAE:
         vae_encoder = Model(vae_input, vae_z)
 
         def vae_r_loss(y_true, y_pred):
-            return 1000 * K.mean(K.square(y_true - y_pred), axis = [1,2,3])
+            return 10 * K.mean(K.square(y_true - y_pred), axis = [1,2,3])
 
         def vae_kl_loss(y_true, y_pred):
             return - 0.5 * K.mean(1 + vae_z_log_var - K.square(vae_z_mean) - K.exp(vae_z_log_var), axis = -1)
@@ -137,8 +138,7 @@ class VAE:
         def vae_loss(y_true, y_pred):
             return vae_r_loss(y_true, y_pred) + vae_kl_loss(y_true, y_pred)
 
-        vae.compile(optimizer='adam', loss='binary_crossentropy', metrics=[vae_r_loss, vae_kl_loss])
-        # vae.compile(optimizer='adam', loss='binary_crossentropy')
+        vae.compile(optimizer='rmsprop', loss=vae_loss, metrics=[vae_r_loss, vae_kl_loss])
 
         return(vae, vae_encoder, vae_decoder)
 
