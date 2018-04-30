@@ -215,12 +215,12 @@ if __name__ == '__main__':
         vae.gen_train(data_dir=args.training_data_dir, use_multiprocessing=args.use_multiprocessing, workers=args.workers)
     elif args.predict:
         assert args.prediction_image_path != '', 'Argument --prediction_image_path cannot be an empty string, please specify the path to the image to run the VAE on.'
-        assert args.model_weights != '', 'Argument --model_name cannot be an empty string, please specify the name of the pre-trained model.'
+        assert args.model_name != '', 'Argument --model_name cannot be an empty string, please specify the name of the pre-trained model.'
         assert os.path.exists(args.prediction_image_path), 'Path to the prediction image does not exist, check you are entering the correct location'
-        print('Predicting {} with {} weights'.format(args.prediction_image_path, args.model_weights))
+        print('Predicting {} with {} weights'.format(args.prediction_image_path, args.model_name))
 
         vae = VAE()
-        vae.load_model(args.model_weights)
+        vae.load_model(args.model_name)
         vae.predict(args.prediction_image_path)
     else:
         print('You must specify either --train or --predict.')
