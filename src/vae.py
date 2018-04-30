@@ -188,7 +188,7 @@ class VAE:
         img = np.array(Image.open(image_path)).reshape((1,) + self.input_dim)
         pred_array = self.model.predict(img)
         print(pred_array.shape, pred_array[0].shape)
-        pred_img = Image.fromarray(self.model.predict(img))
+        pred_img = Image.fromarray(pred_array[0])
         pred_img_name = uuid.uuid4()
         print(pred_img.shape)
         save_path = '{}/{}'.format('/'.join(path.split('/')[:-1], pred_img_name))
