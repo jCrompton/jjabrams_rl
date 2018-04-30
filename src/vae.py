@@ -186,7 +186,7 @@ class VAE:
 
     def predict(self, image_path):
         img = np.array(Image.open(image_path))
-        pred_img = Image.from_array(self.model.predict(img))
+        pred_img = Image.fromarray(self.model.predict(img))
         pred_img_name = uuid.uuid4()
         save_path = '{}/{}'.format('/'.join(path.split('/')[:-1], pred_img_name))
         print('Saving predicted image to given path: {}'.format(save_path))
