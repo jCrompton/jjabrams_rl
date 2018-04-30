@@ -29,7 +29,7 @@ class VAE:
     dense_size = 5012
     # Basic Encoder
     conv_filters = [32,64,64,128,128,256,256]
-    conv_kernel_sizes = [4,4,4,4,4,4,4]
+    conv_kernel_sizes = [4,4,4,4,4,3,3]
     conv_strides = [2,2,2,2,2,2,2]
     conv_activations = ['relu', 'relu', 'relu', 'relu', 'relu', 'relu','relu']
     
