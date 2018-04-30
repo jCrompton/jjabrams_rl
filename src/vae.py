@@ -137,7 +137,7 @@ class VAE:
         def vae_loss(y_true, y_pred):
             return vae_r_loss(y_true, y_pred) + vae_kl_loss(y_true, y_pred)
 
-        vae.compile(optimizer='adam', loss=vae_loss, metrics=[vae_r_loss, vae_kl_loss])
+        vae.compile(optimizer='adam', loss='binary_crossentropy', metrics=[vae_r_loss, vae_kl_loss])
         # vae.compile(optimizer='adam', loss='binary_crossentropy')
 
         return(vae, vae_encoder, vae_decoder)
