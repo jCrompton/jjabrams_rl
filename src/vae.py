@@ -203,6 +203,7 @@ if __name__ == '__main__':
     parser.add_argument('--workers', type=int, default=1, help='Number of workers set only if multiprocessing True (default 1)')
     parser.add_argument('--epochs', type=int, default=1, help='Number of epochs to train on (default 1)')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training (defaults to 32)')
+    parser.add_argument('--resnet', action='store_true', help='If raised the encoder network will use the resnet architecture')
     parser.add_argument('--train', action="store_true", help='If raised the VAE will be trained using the above parameters (default True)')
 
     parser.add_argument('--prediction_image_path', type=str, default='', help='Path to image to run prediction on (default empty string)')
