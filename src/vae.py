@@ -51,7 +51,7 @@ class VAE:
         self.block_builder = Blocks()
         self.model_weight_path = '/home/jamescrompton/'
         self.training_callbacks = [EarlyStopping(monitor='vae_kl_loss', min_delta=0.0001, patience=5, verbose=1, mode='auto'), TerminateOnNaN()]
-        self.model, self.encoder, self.decoder = self._build(basic_encoder=kwargs.get('basic_encoder'))
+        self.model, self.encoder, self.decoder = self._build(resnet_arch=kwargs.get('resnet_arch'))
 
     def _build_transpose_filter_cap(self, input_tensor):
         input_dim = self._get_decoder_cap_dim()
@@ -87,7 +87,7 @@ class VAE:
     def vae_r_loss(y_true, y_pred):
             return 1000 * K.mean(K.square(y_true - y_pred), axis = [1,2,3])
 
-    def _build(self, basic_encoder=True):
+    def _build(self, resnet_arch=False):
         # Encoder
         vae_input = Input(shape=self.input_dim, name='vae_input')
         forward_input = self._build_basic_encoder(vae_input) if basic_encoder else self._build_resnet_encoder(vae_input)
@@ -215,7 +215,7 @@ if __name__ == '__main__':
         multiprocessing_str = ' multithreading with {} workers'.format(parser.workers) if args.use_multiprocessing else ''
         print('Training VAE on {} (epochs:{}, batch_size:{}) using pre-captured data from {}{}, CTRL-C to stop manually at any time...'.format(args.game, args.epochs, args.batch_size, args.training_data_dir, multiprocessing_str))
 
-        vae = VAE(epochs=args.epochs, batch_size=args.batch_size)
+        vae = VAE(epochs=args.epochs, batch_size=args.batch_size, resnet_arch=args.resnet)
         vae.gen_train(data_dir=args.training_data_dir, use_multiprocessing=args.use_multiprocessing, workers=args.workers)
     elif args.predict:
         assert args.prediction_image_path != '', 'Argument --prediction_image_path cannot be an empty string, please specify the path to the image to run the VAE on.'
