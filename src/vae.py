@@ -31,17 +31,17 @@ class VAE:
     conv_filters = [32,64,64,128,128,256,256]
     conv_kernel_sizes = [4,4,4,4,4,4,4]
     conv_strides = [2,2,2,2,2,2,2]
-    conv_activations = ['relu', 'relu', 'relu', 'relu', 'relu', 'relu', 'relu']
+    conv_activations = ['relu', 'relu', 'relu', 'relu', 'relu', 'relu','relu']
     
     # RESNET
     res_net_arch0 = [(1,2,3,[64,64,256]), (1,3,3,[128,128,512]), (1,5,3,[256,256,1028]), (1,2,3,[512,512,2048])]
     res_net_arch = [(1,2,2, [32,32,64])]
 
     # Decoder
-    conv_t_filters = [64, 64, 32, 32, 16, 3]
-    conv_t_kernel_sizes = [12, 12, 10, 8, 8, 6]
-    conv_t_strides = [2,2,2,2,2,2]
-    conv_t_activations = ['relu', 'relu', 'relu', 'relu', 'relu', 'sigmoid']
+    conv_t_filters = [64, 64, 32, 32, 3]
+    conv_t_kernel_sizes = [12, 12, 10, 8, 6]
+    conv_t_strides = [2,2,2,2,2]
+    conv_t_activations = ['relu', 'relu', 'relu', 'relu', 'sigmoid']
 
     z_dim = 512
 
