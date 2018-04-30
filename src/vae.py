@@ -186,6 +186,8 @@ class VAE:
 
     def predict(self, image_path):
         img = np.array(Image.open(image_path)).reshape((1,) + self.input_dim)
+        pred_array = self.model.predict(img)
+        print(pred_array.shape)
         pred_img = Image.fromarray(self.model.predict(img))
         pred_img_name = uuid.uuid4()
         print(pred_img.shape)
