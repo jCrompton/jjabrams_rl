@@ -203,7 +203,7 @@ if __name__ == '__main__':
     parser.add_argument('--train', action="store_true", help='If raised the VAE will be trained using the above parameters (default True)')
 
     parser.add_argument('--prediction_image_path', type=str, default='', help='Path to image to run prediction on (default empty string)')
-    parser.add_argument('--model_weights', type=str, default='', help='Path to pre-trained weights for model to load (default empty string)')
+    parser.add_argument('--model_name', type=str, default='', help='Name of model to load (default empty string)')
     parser.add_argument('--predict', action="store_true", help='If raised the VAE will run a prediction on the specified image (default False), to be saved in the same directory as the given image.')
 
     args = parser.parse_args()
@@ -215,9 +215,8 @@ if __name__ == '__main__':
         vae.gen_train(data_dir=args.training_data_dir, use_multiprocessing=args.use_multiprocessing, workers=args.workers)
     elif args.predict:
         assert args.prediction_image_path != '', 'Argument --prediction_image_path cannot be an empty string, please specify the path to the image to run the VAE on.'
-        assert args.model_weights != '', 'Argument --model_weights cannot be an empty string, please specify the path to the pre-trained model weights.'
+        assert args.model_weights != '', 'Argument --model_name cannot be an empty string, please specify the name of the pre-trained model.'
         assert os.path.exists(args.prediction_image_path), 'Path to the prediction image does not exist, check you are entering the correct location'
-        assert os.path.exists(args.model_weights), 'Path to the model weights does not exist, check you are entering the correct location'
         print('Predicting {} with {} weights'.format(args.prediction_image_path, args.model_weights))
 
         vae = VAE()
