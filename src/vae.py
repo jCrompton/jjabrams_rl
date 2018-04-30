@@ -90,7 +90,7 @@ class VAE:
     def _build(self, resnet_arch=False):
         # Encoder
         vae_input = Input(shape=self.input_dim, name='vae_input')
-        forward_input = self._build_basic_encoder(vae_input) if basic_encoder else self._build_resnet_encoder(vae_input)
+        forward_input = self._build_resnet_encoder(vae_input) if resnet_arch else self._build_basic_encoder(vae_input)
 
         # Compressed state vector
         vae_z_in = Flatten(name='vae_z_in')(forward_input)
